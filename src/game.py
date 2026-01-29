@@ -1,10 +1,9 @@
 """
 Main game loop and event handling for the Chess game.
 """
-import math
 import pygame
 
-from src.configs import SIZE_SQUARE, WIDTH, HEIGHT, COLORS_MOVES_BOARD
+from src.configs import SIZE_SQUARE, COLORS_MOVES_BOARD
 from src.assets import (
     move_sound, capture_sound, check_sound, castling_sound,
     checkmate_sound, stalemate_sound, game_start_sound,
@@ -22,7 +21,6 @@ class Game:
     Attributes:
         screen: Pygame display surface
         piece: Piece manager for game logic
-        IA_player: AI player instance
         board: Board renderer
         sound_button: Sound toggle button
         board_color_button: Board color theme button
@@ -38,10 +36,9 @@ class Game:
         "stalemate": stalemate_sound,
     }
 
-    def __init__(self, screen, piece, IA_player, board, sound_button, board_color_button):
+    def __init__(self, screen, piece, board, sound_button, board_color_button):
         self.screen = screen
         self.piece = piece
-        self.IA_player = IA_player
         self.board = board
         self.sound_button = sound_button
         self.board_color_button = board_color_button
@@ -457,8 +454,7 @@ class Game:
 
                 # AI turn
                 if self.IA and self.turn_IA:
-                    depth = 3
-                    self.IA_player.IA_move(self.piece_moved, depth)
+                    # IA must play => TODO
                     self.turn_IA = False
 
             # End game screen

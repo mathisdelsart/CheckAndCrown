@@ -19,7 +19,6 @@ from src.board import Board
 from src.button import Sound_Button, BoardColor_Button
 from src.piece import Piece
 from src.game import Game
-from src.IA import IA_Player
 
 # Set window icon
 pygame.display.set_icon(black_king_image)
@@ -30,7 +29,6 @@ def main():
     # Create game components
     board = Board(screen)
     piece = Piece()  # Game logic manager
-    IA_player = IA_Player(piece)
 
     # Create UI buttons with offset from corners
     button_size = 60
@@ -49,7 +47,7 @@ def main():
     )
 
     # Create and run game
-    game = Game(screen, piece, IA_player, board, sound_button, board_color_button)
+    game = Game(screen, piece, board, sound_button, board_color_button)
     game.run()
 
 
