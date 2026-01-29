@@ -1,29 +1,62 @@
-from src.all_pieces import Rook, Queen, King, Pawn, Bishop, Knight
-
 """
-Variables used in almost every file .py
+Backward compatibility layer for global state access.
+Maintained for IA.py compatibility - DO NOT REMOVE these global variables.
+
+This module provides the same interface as before (board_pieces, list_white_pieces,
+list_black_pieces) but now backed by a GameState instance.
 """
+from src.game_state import GameState
 
-rook_white_left = Rook((7, 0), 1)
-rook_white_right = Rook((7, 7), 1)
-rook_black_left = Rook((0, 0), -1)
-rook_black_right = Rook((0, 7), -1)
+# Singleton game state instance
+_game_state: GameState = None
 
-board_pieces = [[rook_black_left, Knight((0, 1), -1), Bishop((0, 2), -1), Queen((0, 3), -1), King((0, 4), -1, rook_black_left, rook_black_right), Bishop((0, 5), -1), Knight((0, 6), -1), rook_black_right],
-                [Pawn((1, 0), -1), Pawn((1, 1), -1), Pawn((1, 2), -1), Pawn((1, 3), -1), Pawn((1, 4), -1), Pawn((1, 5), -1), Pawn((1, 6), -1), Pawn((1, 7), -1)],
-                [None, None, None, None, None, None, None, None],
-                [None, None, None, None, None, None, None, None],
-                [None, None, None, None, None, None, None, None],
-                [None, None, None, None, None, None, None, None],
-                [Pawn((6, 0), 1), Pawn((6, 1), 1), Pawn((6, 2), 1), Pawn((6, 3), 1), Pawn((6, 4), 1), Pawn((6, 5), 1), Pawn((6, 6), 1), Pawn((6, 7), 1)],
-                [rook_white_left, Knight((7, 1), 1), Bishop((7, 2), 1), Queen((7, 3), 1), King((7, 4), 1, rook_white_left, rook_white_right), Bishop((7, 5), 1), Knight((7, 6), 1), rook_white_right]]
 
-list_black_pieces = []
-for i in range(0, 2):
-    for j in range(8):
-        list_black_pieces.append(board_pieces[i][j])
+def get_game_state() -> GameState:
+    """Get the current game state, creating it if necessary."""
+    global _game_state
+    if _game_state is None:
+        _game_state = GameState()
+    return _game_state
 
-list_white_pieces = []
-for i in range(6, 8):
-    for j in range(8):
-        list_white_pieces.append(board_pieces[i][j])
+
+def set_game_state(new_state: GameState) -> None:
+    """Set a new game state (used for testing or reset)."""
+    global _game_state, board_pieces, list_white_pieces, list_black_pieces
+    _game_state = new_state
+    # Update global references to point to new state's data
+    board_pieces = _game_state.board
+    list_white_pieces = _game_state._white_pieces
+    list_black_pieces = _game_state._black_pieces
+
+
+def initialize_game() -> GameState:
+    """
+    Initialize or reset the game to starting position.
+    Updates global variables for backward compatibility.
+
+    Returns:
+        The initialized GameState instance
+    """
+    global _game_state, board_pieces, list_white_pieces, list_black_pieces
+
+    _game_state = GameState()
+    _game_state.setup_initial_position()
+
+    # These global references are used by IA.py and other modules
+    board_pieces = _game_state.board
+    list_white_pieces = _game_state._white_pieces
+    list_black_pieces = _game_state._black_pieces
+
+    return _game_state
+
+
+# Initialize on module load for backward compatibility with existing code
+# This creates the initial board state when the module is first imported
+_game_state = GameState()
+_game_state.setup_initial_position()
+
+# Global variables for backward compatibility with IA.py
+# These MUST remain accessible as module-level variables
+board_pieces = _game_state.board
+list_white_pieces = _game_state._white_pieces
+list_black_pieces = _game_state._black_pieces

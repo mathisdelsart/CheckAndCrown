@@ -5,9 +5,21 @@ class Board:
     
     def __init__(self, screen):
         self.screen = screen
+        self.flipped = False  # True when viewing from black's perspective
+    
+    def _flip_coords(self, tile):
+        """Convert logical tile coordinates to display coordinates.
+        
+        When flipped=True, inverts the board so black pieces appear at bottom.
+        tile is (row, col) where row 0 is top, row 7 is bottom.
+        """
+        if self.flipped:
+            return (7 - tile[0], 7 - tile[1])
+        return tile
 
     def draw_tile(self, tile, color):
-        pygame.draw.rect(self.screen, color, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
+        display_tile = self._flip_coords(tile)
+        pygame.draw.rect(self.screen, color, (display_tile[1] * SIZE_SQUARE, display_tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
     
     def check_dark_tile(self, tile):
         if tile[0] % 2 == 0:
@@ -33,4 +45,5 @@ class Board:
     def draw_pieces(self, list_pieces):
         for piece in list_pieces:
             if piece.image != None:
-                self.screen.blit(piece.image, (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
+                display_tile = self._flip_coords(piece.tile)
+                self.screen.blit(piece.image, (display_tile[1] * SIZE_SQUARE, display_tile[0] * SIZE_SQUARE))
