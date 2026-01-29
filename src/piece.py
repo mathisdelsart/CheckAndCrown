@@ -38,12 +38,14 @@ class Piece:
         self.first_move = True
         self.available_moves: List[Tuple[int, int]] = []
 
-        # Store game state reference, or get from variables module
+        # Store game state reference
         if game_state is not None:
             self._game_state = game_state
         else:
-            from src.variables import get_game_state
-            self._game_state = get_game_state()
+            # Create a new game state if none provided
+            from src.game_state import GameState
+            self._game_state = GameState()
+            self._game_state.setup_initial_position()
 
     # ========== Backward Compatibility Methods for IA.py ==========
 
@@ -62,10 +64,6 @@ class Piece:
     def get_list_pieces(self, color_piece: int) -> List['Piece']:
         """Get pieces of specified color. Used by IA.py."""
         return self._game_state.get_pieces_by_color(color_piece)
-
-    def switch_image(self, current_idx: int) -> None:
-        """Switch to alternate image style (no longer used since single image per piece)."""
-        pass
 
     # ========== Piece Management Methods ==========
 
@@ -100,15 +98,13 @@ class Piece:
         """
         pass
 
-    def move_piece(self, current_tile: Tuple[int, int], new_tile: Tuple[int, int],
-                   idx_image: int) -> str:
+    def move_piece(self, current_tile: Tuple[int, int], new_tile: Tuple[int, int]) -> str:
         """
         Execute a move on the board.
 
         Args:
             current_tile: Starting position (row, col)
             new_tile: Destination position (row, col)
-            idx_image: Image style index
 
         Returns:
             Move type as string ("move" or "capture")

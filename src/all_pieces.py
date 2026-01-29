@@ -77,8 +77,7 @@ class Pawn(Piece):
                 if isinstance(adjacent, Pawn) and adjacent.just_moved:
                     self.available_moves.append((row - self.color, new_col))
 
-    def move_piece(self, current_tile: Tuple[int, int], new_tile: Tuple[int, int],
-                   idx_image: int) -> str:
+    def move_piece(self, current_tile: Tuple[int, int], new_tile: Tuple[int, int]) -> str:
         """Handle pawn-specific moves: promotion and en passant."""
         board_pieces = self._game_state.board
 
@@ -122,7 +121,7 @@ class Pawn(Piece):
             self.remove_piece(piece_eaten)
             board_pieces[new_tile[0] + self.color][new_tile[1]] = None
 
-        return super().move_piece(current_tile, new_tile, idx_image)
+        return super().move_piece(current_tile, new_tile)
 
 
 class King(Piece):
@@ -136,7 +135,6 @@ class King(Piece):
         super().__init__(tile, color, game_state)
 
         self.image = white_king_image if color == 1 else black_king_image
-        self.just_moved = False
 
         # References to rooks for castling
         self.rook_left = rook_left
@@ -195,8 +193,7 @@ class King(Piece):
             if self._tiles_empty(queenside_empty) and self._tiles_not_attacked(queenside_check):
                 self.available_moves.append((row, 2))
 
-    def move_piece(self, current_tile: Tuple[int, int], new_tile: Tuple[int, int],
-                   idx_image: int) -> str:
+    def move_piece(self, current_tile: Tuple[int, int], new_tile: Tuple[int, int]) -> str:
         """Handle king moves including castling."""
         board_pieces = self._game_state.board
         row = new_tile[0]
@@ -209,7 +206,7 @@ class King(Piece):
                 board_pieces[row][7] = None
                 rook.tile = (row, 5)
                 rook.first_move = False
-                super().move_piece(current_tile, new_tile, idx_image)
+                super().move_piece(current_tile, new_tile)
                 return "castling"
 
             # Queenside castling
@@ -219,10 +216,10 @@ class King(Piece):
                 board_pieces[row][0] = None
                 rook.tile = (row, 3)
                 rook.first_move = False
-                super().move_piece(current_tile, new_tile, idx_image)
+                super().move_piece(current_tile, new_tile)
                 return "castling"
 
-        return super().move_piece(current_tile, new_tile, idx_image)
+        return super().move_piece(current_tile, new_tile)
 
 
 class Knight(Piece):
@@ -235,7 +232,6 @@ class Knight(Piece):
         super().__init__(tile, color, game_state)
 
         self.image = white_knight_image if color == 1 else black_knight_image
-        self.just_moved = False
 
     def update_possible_moves(self) -> None:
         """Calculate knight L-shaped moves."""
@@ -254,7 +250,6 @@ class Rook(Piece):
         super().__init__(tile, color, game_state)
 
         self.image = white_rook_image if color == 1 else black_rook_image
-        self.just_moved = False
 
     def update_possible_moves(self) -> None:
         """Calculate rook moves along ranks and files."""
@@ -273,7 +268,6 @@ class Bishop(Piece):
         super().__init__(tile, color, game_state)
 
         self.image = white_bishop_image if color == 1 else black_bishop_image
-        self.just_moved = False
 
     def update_possible_moves(self) -> None:
         """Calculate bishop moves along diagonals."""
@@ -292,7 +286,6 @@ class Queen(Piece):
         super().__init__(tile, color, game_state)
 
         self.image = white_queen_image if color == 1 else black_queen_image
-        self.just_moved = False
 
     def update_possible_moves(self) -> None:
         """Calculate queen moves (rook + bishop combined)."""

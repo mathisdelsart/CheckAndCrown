@@ -51,8 +51,6 @@ class Game:
         self.white_turn = True
         self.winner = 0
 
-        self.type_image_piece = 0  # Type of pieces selected (for the images)
-
         self.mouse_pressed = False
         self.mouse_just_released = False
 
@@ -156,7 +154,6 @@ class Game:
         """Reset the game to initial state."""
         self.white_turn = True
         self.winner = 0
-        self.type_image_piece = 0
         self.mouse_pressed = False
         self.mouse_just_released = False
         self.pressed_piece_image = None
@@ -173,17 +170,8 @@ class Game:
         from src.variables import initialize_game
         new_game_state = initialize_game()
         
-        # CRITICAL: Update the game_state reference in self.piece
-        # Otherwise it keeps pointing to the old game state!
         self.piece._game_state = new_game_state
-
         self.update_moves_first_turn()
-
-    def change_image(self):
-        """Toggle between piece image styles."""
-        for piece in self.piece.get_list_black_pieces() + self.piece.get_list_white_pieces():
-            piece.switch_image(self.type_image_piece)
-        self.type_image_piece = 1 - self.type_image_piece
 
     def play_music(self, move_type: str):
         """
@@ -241,10 +229,6 @@ class Game:
                         mouse_pos = pygame.mouse.get_pos()
                         self.end_game_menu.handle_click(mouse_pos)
                     continue
-
-                # Middle click - change piece images
-                if event.button == 2:
-                    self.change_image()
 
                 # Left click
                 elif event.button == 1:
@@ -410,7 +394,7 @@ class Game:
                             # Execute move and capture ORIGINAL move type
                             # This is the key fix for the sound bug!
                             original_move_type = piece_clicked.move_piece(
-                                self.tile_pressed, self.tile_moved, self.type_image_piece
+                                self.tile_pressed, self.tile_moved
                             )
                             self.piece_moved = piece_clicked
 
